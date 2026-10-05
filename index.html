@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For You 💖</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💌</text></svg>">
+<meta name="description" content="A love letter, from my heart to yours.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Kalam:wght@400;700&family=Patrick+Hand&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; overflow: hidden; }
+body {
+  font-family: 'Crimson Text', Georgia, serif;
+  background: #f3e5d0;
+  color: #4a3020;
+  -webkit-font-smoothing: antialiased;
+}
+
+.screen {
+  position: fixed; inset: 0;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 1;
+}
+.screen.active { display: flex; z-index: 10; }
+
+/* ============================================================
+   ÉCRAN 1 : QUESTION
+   ============================================================ */
+#screen-question {
+  background-color: #d4a574;
+  background-image:
+    radial-gradient(circle at 15% 20%, rgba(120,80,40,0.3) 0%, transparent 30%),
+    radial-gradient(circle at 85% 80%, rgba(120,80,40,0.25) 0%, transparent 30%),
+    repeating-linear-gradient(45deg,
+      rgba(160,110,60,0.15) 0px, rgba(160,110,60,0.15) 2px,
+      rgba(140,95,50,0.15) 2px, rgba(140,95,50,0.15) 4px);
+}
+
+#particle-canvas {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.question-box {
+  position: relative; z-index: 10;
+  background: #fef9e7;
+  padding: 55px 70px 45px;
+  box-shadow:
+    2px 3px 0 rgba(0,0,0,0.05),
+    6px 8px 20px rgba(90,60,30,0.35),
+    inset 0 0 40px rgba(200,170,120,0.15);
+  text-align: center;
+  transform: rotate(-1.5deg);
+  border-radius: 3px;
+}
+.question-box::before {
+  content: '';
+  position: absolute;
+  top: -14px; left: 50%;
+  transform: translateX(-50%) rotate(2deg);
+  width: 100px; height: 28px;
+  background: rgba(255,240,180,0.65);
+  border-left: 1px dashed rgba(180,150,100,0.4);
+  border-right: 1px dashed rgba(180,150,100,0.4);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.main-question {
+  font-family: 'Caveat', cursive;
+  font-size: 3.2rem;
+  font-weight: 700;
+  color: #2c1810;
+  margin-bottom: 40px;
+  line-height: 1.1;
+  transform: rotate(-0.5deg);
+}
+
+.buttons {
+  position: relative;
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+  min-height: 80px;
+}
+
+.btn {
+  padding: 14px 44px;
+  font-size: 1.3rem;
+  border: none;
+  cursor: pointer;
+  font-family: 'Kalam', cursive;
+  font-weight: 700;
+  transition: left 0.4s cubic-bezier(0.34,1.56,0.64,1),
+              top 0.4s cubic-bezier(0.34,1.56,0.64,1),
+              transform 0.3s ease, box-shadow 0.2s ease;
+  position: relative;
+  border-radius: 3px;
+}
+.btn-yes {
+  background: #e85a5a;
+  color: #fff;
+  box-shadow: 3px 3px 0 #b53c3c;
+  transform: rotate(-2deg);
+}
+.btn-yes:hover { box-shadow: 1px 1px 0 #b53c3c; transform: rotate(-2deg) translateY(2px); }
+.btn-no {
+  background: #6ba86b;
+  color: #fff;
+  box-shadow: 3px 3px 0 #4a804a;
+  transform: rotate(1.5deg);
+}
+.btn-no:hover { box-shadow: 1px 1px 0 #4a804a; transform: rotate(1.5deg) translateY(2px); }
+
+.hint {
+  margin-top: 25px;
+  font-family: 'Caveat', cursive;
+  font-size: 1.1rem;
+  color: #8a6a4a;
+  transform: rotate(1deg);
+}
+
+/* ============================================================
+   BOUTON CONTINUE
+   ============================================================ */
+.btn-continue {
+  margin-top: 25px;
+  padding: 12px 36px;
+  font-size: 1.15rem;
+  font-family: 'Kalam', cursive;
+  font-weight: 700;
+  color: #fff;
+  background: #c9603c;
+  border: none;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 #8a3e20;
+  transform: rotate(-1deg);
+  transition: all 0.2s ease;
+  letter-spacing: 0.5px;
+}
+.btn-continue:hover {
+  box-shadow: 1px 1px 0 #8a3e20;
+  transform: rotate(-1deg) translateY(2px);
+}
+
+/* ============================================================
+   ÉCRAN 2 : LETTRE
+   ============================================================ */
+#screen-letter {
+  background-color: #e8d5b8;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(160,120,80,0.2) 0%, transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(140,100,60,0.18) 0%, transparent 40%);
+  padding: 20px;
+  justify-content: center;
+}
+
+.letter-wrapper {
+  position: relative;
+  max-width: 760px;
+  width: 92%;
+  max-height: 72vh;
+  background: #fdf6e3;
+  padding: 45px 55px 45px;
+  box-shadow:
+    0 15px 45px rgba(80,50,20,0.35),
+    inset 0 0 60px rgba(200,170,120,0.25);
+  transform: rotate(-0.8deg);
+  border-radius: 2px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.letter-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 33px,
+    rgba(140,170,220,0.35) 33px,
+    rgba(140,170,220,0.35) 34px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+.letter-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  left: 40px;
+  width: 2px;
+  background: rgba(220,100,100,0.5);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.letter-stamp {
+  position: absolute;
+  top: 20px; right: 25px;
+  width: 75px; height: 90px;
+  background: #d4a574;
+  border: 3px dashed #8a5a3a;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+  transform: rotate(6deg);
+  box-shadow: 0 3px 8px rgba(80,50,20,0.2);
+  z-index: 5;
+}
+
+.letter-content {
+  position: relative;
+  z-index: 2;
+  font-family: 'Caveat', cursive;
+  font-size: 1.35rem;
+  color: #2a4a6a;
+  line-height: 34px;
+  padding-left: 10px;
+}
+.letter-content h2 {
+  font-family: 'Caveat', cursive;
+  font-size: 2.3rem;
+  font-weight: 700;
+  color: #1a3a5a;
+  margin-bottom: 20px;
+  transform: rotate(-1deg);
+}
+.letter-content p { margin-bottom: 0; line-height: 34px; }
+.letter-content .signature {
+  font-size: 1.8rem;
+  margin-top: 25px;
+  transform: rotate(-2deg);
+  color: #8a3a4a;
+}
+.letter-content .ps {
+  font-size: 1.15rem;
+  color: #6a4a2a;
+  margin-top: 18px;
+  font-style: italic;
+  transform: rotate(0.5deg);
+}
+
+/* ============================================================
+   ÉCRAN 3 : DISTANCE + HORLOGES
+   ============================================================ */
+#screen-distance {
+  background-color: #f3e5d0;
+  background-image:
+    radial-gradient(circle at 30% 40%, rgba(200,160,120,0.25) 0%, transparent 40%),
+    radial-gradient(circle at 70% 60%, rgba(180,140,110,0.2) 0%, transparent 40%);
+  padding: 20px;
+}
+.distance-content {
+  text-align: center;
+  z-index: 2;
+  padding: 30px 20px;
+  max-width: 900px;
+}
+.distance-title {
+  font-family: 'Kalam', cursive;
+  font-size: 2.4rem;
+  color: #4a3020;
+  margin-bottom: 30px;
+  transform: rotate(-1deg);
+}
+.distance-big {
+  font-family: 'Caveat', cursive;
+  font-size: 6rem;
+  font-weight: 700;
+  color: #c9603c;
+  line-height: 1;
+  margin-bottom: 5px;
+}
+.distance-unit {
+  font-family: 'Kalam', cursive;
+  font-size: 2rem;
+  color: #8a5a3a;
+  margin-left: 10px;
+}
+.distance-caption {
+  font-family: 'Caveat', cursive;
+  color: #6a4a2a;
+  font-size: 1.5rem;
+  margin: 15px 0 40px;
+}
+.clocks {
+  display: flex;
+  gap: 25px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.clock-card {
+  background: #fdf6e3;
+  padding: 20px 30px;
+  min-width: 200px;
+  box-shadow: 3px 4px 0 rgba(120,80,40,0.2), 6px 8px 15px rgba(80,50,20,0.15);
+  transform: rotate(-1deg);
+  border-radius: 2px;
+  position: relative;
+}
+.clock-card:nth-child(2) { transform: rotate(1.5deg); }
+.clock-card::before {
+  content: '';
+  position: absolute;
+  top: -8px; left: 50%;
+  transform: translateX(-50%);
+  width: 40px; height: 16px;
+  background: rgba(220,180,120,0.7);
+  border-left: 1px dashed rgba(160,120,80,0.4);
+  border-right: 1px dashed rgba(160,120,80,0.4);
+}
+.clock-flag { font-size: 2.2rem; margin-bottom: 6px; }
+.clock-city {
+  font-family: 'Kalam', cursive;
+  color: #4a3020;
+  font-size: 1.15rem;
+  margin-bottom: 8px;
+}
+.clock-time {
+  font-family: 'Courier New', monospace;
+  font-size: 1.9rem;
+  color: #c9603c;
+  font-weight: bold;
+}
+.clocks-note {
+  font-family: 'Caveat', cursive;
+  color: #8a6a4a;
+  margin-top: 25px;
+  font-size: 1.2rem;
+  transform: rotate(-0.5deg);
+}
+
+/* ============================================================
+   ÉCRAN 4 : REASONS
+   ============================================================ */
+#screen-reasons {
+  background-color: #c9a37a;
+  background-image:
+    radial-gradient(circle at 25% 25%, rgba(120,80,40,0.3) 0%, transparent 30%),
+    radial-gradient(circle at 75% 75%, rgba(100,70,30,0.25) 0%, transparent 30%),
+    repeating-linear-gradient(35deg,
+      rgba(160,120,70,0.15) 0px, rgba(160,120,70,0.15) 3px,
+      rgba(140,100,60,0.15) 3px, rgba(140,100,60,0.15) 6px);
+}
+.reasons-content {
+  text-align: center;
+  padding: 20px;
+  width: 100%;
+  max-width: 1000px;
+  position: relative;
+}
+.reasons-title {
+  font-family: 'Caveat', cursive;
+  font-size: 3rem;
+  font-weight: 700;
+  color: #fdf6e3;
+  margin-bottom: 8px;
+  text-shadow: 2px 2px 6px rgba(0,0,0,0.4);
+  transform: rotate(-1.5deg);
+}
+.reasons-sub {
+  font-family: 'Kalam', cursive;
+  color: #fdf6e3;
+  font-size: 1.1rem;
+  margin-bottom: 30px;
+  opacity: 0.9;
+  transform: rotate(0.5deg);
+}
+.bubbles-area {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 18px;
+  min-height: 300px;
+  padding: 20px;
+  position: relative;
+}
+
+.bubble {
+  font-family: 'Caveat', cursive;
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: #2c1810;
+  padding: 22px 24px 20px;
+  cursor: pointer;
+  min-width: 160px;
+  max-width: 220px;
+  text-align: center;
+  line-height: 1.1;
+  position: relative;
+  box-shadow:
+    2px 3px 0 rgba(0,0,0,0.08),
+    4px 6px 12px rgba(40,20,10,0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  animation: postitIn 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  user-select: none;
+  border-radius: 2px;
+}
+@keyframes postitIn {
+  0% { transform: scale(0.3) rotate(-15deg); opacity: 0; }
+  100% { transform: scale(1) rotate(var(--rot, 0deg)); opacity: 1; }
+}
+.bubble:nth-child(6n+1) { background: #ffe9a8; --rot: -3deg; }
+.bubble:nth-child(6n+2) { background: #ffc9c9; --rot: 2deg; }
+.bubble:nth-child(6n+3) { background: #c9e4ff; --rot: -1.5deg; }
+.bubble:nth-child(6n+4) { background: #c9ffd4; --rot: 3deg; }
+.bubble:nth-child(6n+5) { background: #ffd8f0; --rot: -2deg; }
+.bubble:nth-child(6n+6) { background: #e0d4ff; --rot: 1.5deg; }
+
+.bubble::after {
+  content: '';
+  position: absolute;
+  bottom: 0; right: 0;
+  width: 0; height: 0;
+  border-left: 14px solid rgba(0,0,0,0.08);
+  border-bottom: 14px solid rgba(0,0,0,0.15);
+  border-bottom-right-radius: 2px;
+}
+.bubble::before {
+  content: '';
+  position: absolute;
+  top: -8px; left: 50%;
+  transform: translateX(-50%) rotate(-3deg);
+  width: 45px; height: 14px;
+  background: rgba(255,255,255,0.55);
+  border-left: 1px dashed rgba(160,160,160,0.3);
+  border-right: 1px dashed rgba(160,160,160,0.3);
+}
+
+.bubble:hover {
+  transform: scale(1.08) rotate(0deg);
+  box-shadow:
+    2px 3px 0 rgba(0,0,0,0.08),
+    8px 12px 20px rgba(40,20,10,0.45);
+  z-index: 10;
+}
+
+.bubble.popped {
+  transform: scale(1.4) rotate(20deg);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.4s ease;
+}
+
+.bubble-heart {
+  position: fixed;
+  pointer-events: none;
+  z-index: 500;
+  font-size: 1.5rem;
+  animation: bubbleHeartFly 1.2s ease-out forwards;
+}
+@keyframes bubbleHeartFly {
+  0% { transform: translate(0, 0) scale(0.3) rotate(0deg); opacity: 1; }
+  100% { transform: translate(var(--tx), var(--ty)) scale(1.3) rotate(var(--rot)); opacity: 0; }
+}
+
+/* ============================================================
+   ÉCRAN 5 : LOVE
+   ============================================================ */
+#screen-love {
+  background-color: #f3e5d0;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(200,160,120,0.2) 0%, transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(180,140,110,0.18) 0%, transparent 40%);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 40px 20px;
+  justify-content: flex-start;
+}
+
+#fireworks-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.55;
+}
+
+.love-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 1100px;
+  width: 100%;
+}
+
+.love-title {
+  font-family: 'Caveat', cursive;
+  font-weight: 700;
+  font-size: 3.5rem;
+  color: #4a3020;
+  margin-bottom: 40px;
+  transform: rotate(-1deg);
+}
+
+.polaroid-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 25px;
+  margin-bottom: 60px;
+}
+.polaroid {
+  position: relative;
+  background: #fffdf5;
+  padding: 14px 14px 50px;
+  box-shadow:
+    2px 3px 0 rgba(0,0,0,0.06),
+    6px 10px 25px rgba(80,50,20,0.35);
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+  cursor: pointer;
+  border-radius: 2px;
+}
+.polaroid:nth-child(odd) { transform: rotate(-4deg); }
+.polaroid:nth-child(even) { transform: rotate(3.5deg); }
+.polaroid:nth-child(3n) { transform: rotate(-2deg); }
+
+.polaroid::before {
+  content: '';
+  position: absolute;
+  top: -12px; left: 50%;
+  transform: translateX(-50%) rotate(-2deg);
+  width: 70px; height: 22px;
+  background: rgba(230,200,150,0.6);
+  border-left: 1px dashed rgba(160,120,80,0.35);
+  border-right: 1px dashed rgba(160,120,80,0.35);
+  z-index: 2;
+}
+
+.polaroid:hover {
+  transform: rotate(0deg) scale(1.1) translateY(-10px);
+  box-shadow:
+    2px 3px 0 rgba(0,0,0,0.06),
+    15px 22px 40px rgba(80,50,20,0.5);
+  z-index: 10;
+}
+.polaroid-img {
+  width: 180px;
+  height: 220px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #eadbc4;
+  border-radius: 1px;
+  filter: sepia(0.15) contrast(1.05);
+}
+.polaroid::after {
+  content: attr(data-msg);
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Caveat', cursive;
+  font-weight: 700;
+  color: #2a4a6a;
+  font-size: 1.25rem;
+  white-space: nowrap;
+}
+
+.love-letters {
+  margin: 40px auto;
+  max-width: 700px;
+  background: #fdf6e3;
+  padding: 40px 45px;
+  box-shadow:
+    2px 3px 0 rgba(0,0,0,0.06),
+    8px 12px 25px rgba(80,50,20,0.25);
+  transform: rotate(0.8deg);
+  border-radius: 2px;
+  position: relative;
+}
+.love-letters::before {
+  content: '';
+  position: absolute;
+  top: -12px; left: 40px;
+  width: 90px; height: 24px;
+  background: rgba(220,180,150,0.6);
+  border-left: 1px dashed rgba(160,120,80,0.35);
+  border-right: 1px dashed rgba(160,120,80,0.35);
+  transform: rotate(-3deg);
+}
+.letter {
+  font-family: 'Caveat', cursive;
+  font-weight: 500;
+  font-size: 1.65rem;
+  color: #2a4a6a;
+  margin: 18px 0;
+  opacity: 0;
+  animation: inkAppear 1s ease forwards;
+}
+.letter:nth-child(1) { animation-delay: 0.5s; }
+.letter:nth-child(2) { animation-delay: 1.5s; }
+.letter:nth-child(3) { animation-delay: 2.5s; }
+.letter:nth-child(4) { animation-delay: 3.5s; }
+@keyframes inkAppear {
+  from { opacity: 0; transform: translateY(15px); filter: blur(4px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+.btn-heart {
+  margin-top: 30px;
+  padding: 16px 50px;
+  font-size: 1.4rem;
+  font-family: 'Kalam', cursive;
+  font-weight: 700;
+  color: #fff;
+  background: #c9603c;
+  border: none;
+  cursor: pointer;
+  box-shadow: 4px 4px 0 #8a3e20;
+  transform: rotate(-1.5deg);
+  transition: all 0.2s ease;
+}
+.btn-heart:hover {
+  box-shadow: 2px 2px 0 #8a3e20;
+  transform: rotate(-1.5deg) translateY(2px);
+}
+
+.exploding-heart {
+  position: fixed;
+  font-size: 2rem;
+  pointer-events: none;
+  z-index: 100;
+  animation: explode 2s ease-out forwards;
+}
+@keyframes explode {
+  0% { transform: translate(0,0) scale(0.5); opacity: 1; }
+  100% { transform: translate(var(--tx), var(--ty)) scale(1.5) rotate(360deg); opacity: 0; }
+}
+
+/* ============================================================
+   ÉCRAN 6 : FINAL
+   ============================================================ */
+#screen-final {
+  background-color: #e8d5b8;
+  background-image:
+    radial-gradient(circle at 25% 25%, rgba(160,120,80,0.2) 0%, transparent 40%),
+    radial-gradient(circle at 75% 75%, rgba(140,100,60,0.18) 0%, transparent 40%);
+}
+.final-content {
+  text-align: center;
+  padding: 50px 60px;
+  max-width: 700px;
+  background: #fdf6e3;
+  box-shadow:
+    2px 3px 0 rgba(0,0,0,0.06),
+    10px 15px 35px rgba(80,50,20,0.35);
+  transform: rotate(-1deg);
+  border-radius: 2px;
+  position: relative;
+}
+.final-content::before {
+  content: '';
+  position: absolute;
+  top: -12px; left: 50%;
+  transform: translateX(-50%) rotate(2deg);
+  width: 110px; height: 26px;
+  background: rgba(230,200,150,0.6);
+  border-left: 1px dashed rgba(160,120,80,0.35);
+  border-right: 1px dashed rgba(160,120,80,0.35);
+}
+.final-heart {
+  font-size: 5rem;
+  animation: heartBeat 1.4s ease-in-out infinite;
+  margin-bottom: 15px;
+  display: inline-block;
+}
+@keyframes heartBeat {
+  0%, 100% { transform: scale(1) rotate(-3deg); }
+  50% { transform: scale(1.15) rotate(3deg); }
+}
+.final-title {
+  font-family: 'Caveat', cursive;
+  font-weight: 700;
+  font-size: 2.8rem;
+  color: #2a4a6a;
+  margin-bottom: 25px;
+  transform: rotate(-0.5deg);
+}
+.final-text {
+  font-family: 'Caveat', cursive;
+  font-weight: 500;
+  color: #4a3020;
+  font-size: 1.6rem;
+  line-height: 1.5;
+  margin-bottom: 35px;
+}
+.final-text strong {
+  color: #c9603c;
+  font-size: 1.9rem;
+  font-weight: 700;
+}
+
+#screen-love::-webkit-scrollbar,
+.letter-wrapper::-webkit-scrollbar { width: 10px; }
+#screen-love::-webkit-scrollbar-track,
+.letter-wrapper::-webkit-scrollbar-track { background: rgba(200,160,120,0.3); }
+#screen-love::-webkit-scrollbar-thumb,
+.letter-wrapper::-webkit-scrollbar-thumb { background: #c9603c; border-radius: 5px; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 768px) {
+  .main-question { font-size: 2.2rem; }
+  .question-box { padding: 35px 30px 30px; }
+  .btn { padding: 12px 30px; font-size: 1.1rem; }
+  .btn-continue { padding: 11px 28px; font-size: 1rem; }
+  .btn-heart { padding: 14px 36px; font-size: 1.15rem; }
+
+  .letter-wrapper { padding: 35px 30px 35px; }
+  .letter-wrapper::after { left: 25px; }
+  .letter-content { font-size: 1.15rem; line-height: 28px; padding-left: 5px; }
+  .letter-content h2 { font-size: 1.8rem; }
+  .letter-content p { line-height: 28px; }
+  .letter-content .signature { font-size: 1.5rem; }
+  .letter-content .ps { font-size: 1rem; }
+  .letter-stamp { width: 55px; height: 70px; font-size: 1.6rem; right: 12px; top: 12px; }
+
+  .distance-title { font-size: 1.9rem; }
+  .distance-big { font-size: 4rem; }
+  .distance-unit { font-size: 1.4rem; }
+  .clock-card { min-width: 150px; padding: 15px 20px; }
+  .clock-time { font-size: 1.4rem; }
+
+  .reasons-title { font-size: 2.2rem; }
+  .bubble { font-size: 1.1rem; padding: 18px 18px 16px; min-width: 130px; }
+
+  .love-title { font-size: 2.5rem; }
+  .polaroid-img { width: 130px; height: 160px; }
+  .polaroid::after { font-size: 1rem; }
+  .love-letters { padding: 30px 25px; }
+  .letter { font-size: 1.35rem; }
+
+  .final-content { padding: 35px 30px; }
+  .final-title { font-size: 2.1rem; }
+  .final-text { font-size: 1.3rem; }
+  .final-text strong { font-size: 1.5rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ÉCRAN 1 : QUESTION -->
+<section id="screen-question" class="screen active">
+  <canvas id="particle-canvas"></canvas>
+  <div class="question-box">
+    <h1 class="main-question">Are you still angry ? 🥺</h1>
+    <div class="buttons">
+      <button id="btn-yes" class="btn btn-yes">Yes</button>
+      <button id="btn-no" class="btn btn-no">No</button>
+    </div>
+    <p class="hint">(choose wisely... 😏)</p>
+  </div>
+</section>
+
+<!-- ÉCRAN 2 : LETTRE -->
+<section id="screen-letter" class="screen">
+  <div class="letter-wrapper">
+    <div class="letter-stamp">💌</div>
+    <div class="letter-content">
+      <h2>My love,</h2>
+      <p>From Aix-en-Provence to Kaišiadorys,</p>
+      <p>across every country, every border,</p>
+      <p>every single kilometer…</p>
+      <p>my heart already lives with you.</p>
+      <p>Distance means nothing</p>
+      <p>when someone means everything.</p>
+      <p class="signature">— Always yours 💕</p>
+      <p class="ps">P.S. One day, no more calls. Just us.</p>
+    </div>
+  </div>
+  <button class="btn-continue next-btn">Continue →</button>
+</section>
+
+<!-- ÉCRAN 3 : DISTANCE -->
+<section id="screen-distance" class="screen">
+  <div class="distance-content">
+    <h2 class="distance-title">Between us 💗</h2>
+    <div class="distance-big">
+      <span id="distance-km">0</span>
+      <span class="distance-unit">km</span>
+    </div>
+    <p class="distance-caption">...but my heart is right next to you</p>
+    <div class="clocks">
+      <div class="clock-card">
+        <div class="clock-flag">🇫🇷</div>
+        <div class="clock-city">Aix-en-Provence</div>
+        <div class="clock-time" id="clock-fr">--:--:--</div>
+      </div>
+      <div class="clock-card">
+        <div class="clock-flag">🇱🇹</div>
+        <div class="clock-city">Kaišiadorys</div>
+        <div class="clock-time" id="clock-lt">--:--:--</div>
+      </div>
+    </div>
+    <p class="clocks-note">One hour apart — always in sync 💞</p>
+    <button class="btn-continue next-btn">Continue →</button>
+  </div>
+</section>
+
+<!-- ÉCRAN 4 : REASONS -->
+<section id="screen-reasons" class="screen">
+  <div class="reasons-content">
+    <h2 class="reasons-title">Reasons why I love you</h2>
+    <p class="reasons-sub">tap a post-it 💕</p>
+    <div class="bubbles-area" id="bubbles-area"></div>
+    <button class="btn-continue next-btn">Continue →</button>
+  </div>
+</section>
+
+<!-- ÉCRAN 5 : LOVE -->
+<section id="screen-love" class="screen">
+  <canvas id="fireworks-canvas"></canvas>
+  <div class="love-content">
+    <h1 class="love-title">I love you, endlessly.</h1>
+
+    <div class="polaroid-gallery">
+      <div class="polaroid" data-msg="My heart is yours 🌹">
+        <div class="polaroid-img" style="background-image:url('https://i.pinimg.com/1200x/45/fd/5c/45fd5c337e810577447f17bf519b853c.jpg')"></div>
+      </div>
+      <div class="polaroid" data-msg="You + Me = ∞">
+        <div class="polaroid-img" style="background-image:url('https://i.pinimg.com/736x/e6/84/ac/e684acbb2769e5237d940057b4473407.jpg')"></div>
+      </div>
+      <div class="polaroid" data-msg="My favorite person 💖">
+        <div class="polaroid-img" style="background-image:url('https://i.pinimg.com/736x/08/bd/22/08bd22c0be5f360a09154d22e1d7357f.jpg')"></div>
+      </div>
+      <div class="polaroid" data-msg="With you, always">
+        <div class="polaroid-img" style="background-image:url('https://i.pinimg.com/736x/f5/bf/33/f5bf33ce0be60972c4c9dfc6ff401350.jpg')"></div>
+      </div>
+      <div class="polaroid" data-msg="My forever 💗">
+        <div class="polaroid-img" style="background-image:url('https://i.pinimg.com/736x/b1/e1/9d/b1e19d016b11e6bf08da52e04626f3d7.jpg')"></div>
+      </div>
+    </div>
+
+    <div class="love-letters">
+      <p class="letter">💌 I'd block every girl in the world for you.</p>
+      <p class="letter">💌 I'll never think of another girl but you.</p>
+      <p class="letter">💌 With you, we'll travel the whole world.</p>
+      <p class="letter">💌 And one day… we'll have children. 👶💕</p>
+    </div>
+
+    <button id="btn-hearts" class="btn-heart">Click here 💗</button>
+    <button class="btn-continue next-btn" style="margin-top: 30px;">One last thing… →</button>
+  </div>
+</section>
+
+<!-- ÉCRAN 6 : FINAL -->
+<section id="screen-final" class="screen">
+  <div class="final-content">
+    <div class="final-heart">💖</div>
+    <h1 class="final-title">I love you, my forever girl.</h1>
+    <p class="final-text">
+      From Aix-en-Provence to Kaišiadorys,<br>
+      from every sunrise to every sunset,<br>
+      it's always been you.<br><br>
+      <strong>Forever yours 💕</strong>
+    </p>
+    <button id="btn-final-hearts" class="btn-heart">One more time 💗</button>
+  </div>
+</section>
+
+<script>
+/* NAVIGATION */
+const screens = {
+  question: document.getElementById('screen-question'),
+  letter:   document.getElementById('screen-letter'),
+  distance: document.getElementById('screen-distance'),
+  reasons:  document.getElementById('screen-reasons'),
+  love:     document.getElementById('screen-love'),
+  final:    document.getElementById('screen-final')
+};
+const ORDER = ['question', 'letter', 'distance', 'reasons', 'love', 'final'];
+let clocksStarted = false, bubblesDone = false, fireworksStarted = false;
+
+function goToScreen(name) {
+  Object.values(screens).forEach(s => { if (s) s.classList.remove('active'); });
+  if (screens[name]) screens[name].classList.add('active');
+  if (name === 'distance') startClocks();
+  if (name === 'reasons')  startBubbles();
+  if (name === 'love')     startFireworks();
+}
+document.querySelectorAll('.next-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const cur = document.querySelector('.screen.active');
+    if (!cur) return;
+    const i = ORDER.indexOf(cur.id.replace('screen-', ''));
+    if (i >= 0 && i < ORDER.length - 1) goToScreen(ORDER[i + 1]);
+  });
+});
+
+/* EMOJIS QUI VOLENT */
+const EMOJIS = ['💗','💕','💖','❤️','🌸','✨'];
+const pc = document.getElementById('particle-canvas');
+const pctx = pc.getContext('2d');
+function resizePC() { pc.width = window.innerWidth; pc.height = window.innerHeight; }
+window.addEventListener('resize', resizePC); resizePC();
+
+class Particle {
+  constructor() { this.reset(); this.alpha = Math.random() * 0.5; }
+  reset() {
+    this.x = Math.random() * pc.width;
+    this.y = Math.random() * pc.height;
+    const a = Math.random() * Math.PI * 2;
+    const s = 0.2 + Math.random() * 0.7;
+    this.vx = Math.cos(a) * s;
+    this.vy = Math.sin(a) * s;
+    this.size = 14 + Math.random() * 18;
+    this.emoji = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+    this.rot = Math.random() * Math.PI * 2;
+    this.rotSp = (Math.random() - 0.5) * 0.03;
+    this.alpha = 0;
+    this.target = 0.35 + Math.random() * 0.4;
+    this.fadeIn = true;
+  }
+  update() {
+    this.x += this.vx; this.y += this.vy;
+    this.vx += (Math.random() - 0.5) * 0.02;
+    this.vy += (Math.random() - 0.5) * 0.02;
+    const m = 1;
+    this.vx = Math.max(-m, Math.min(m, this.vx));
+    this.vy = Math.max(-m, Math.min(m, this.vy));
+    if (this.x < -50) this.x = pc.width + 50;
+    if (this.x > pc.width + 50) this.x = -50;
+    if (this.y < -50) this.y = pc.height + 50;
+    if (this.y > pc.height + 50) this.y = -50;
+    this.rot += this.rotSp;
+    if (this.fadeIn) { this.alpha += 0.01; if (this.alpha >= this.target) this.fadeIn = false; }
+    else { this.alpha -= 0.003; if (this.alpha <= 0) this.reset(); }
+  }
+  draw() {
+    pctx.save();
+    pctx.globalAlpha = Math.max(0, Math.min(1, this.alpha));
+    pctx.translate(this.x, this.y);
+    pctx.rotate(this.rot);
+    pctx.font = this.size + 'px serif';
+    pctx.textAlign = 'center'; pctx.textBaseline = 'middle';
+    pctx.fillText(this.emoji, 0, 0);
+    pctx.restore();
+  }
+}
+const particles = [];
+for (let i = 0; i < 30; i++) particles.push(new Particle());
+(function loopParticles() {
+  pctx.clearRect(0, 0, pc.width, pc.height);
+  particles.forEach(p => { p.update(); p.draw(); });
+  requestAnimationFrame(loopParticles);
+})();
+
+/* BOUTON YES QUI FUIT */
+const btnYes = document.getElementById('btn-yes');
+const btnNo  = document.getElementById('btn-no');
+const mainQ  = document.querySelector('.main-question');
+const YES_MSG = [
+  "Are you still angry ? 🥺",
+  "Are you sure ? 😢",
+  "Really sure ? 🥹",
+  "Think again… 💔",
+  "Please… 🙏",
+  "I love you too much for this 😭",
+  "The 'No' button is nicer 👉",
+  "You're breaking my heart 😿",
+  "Try 'No', you'll like it 💖",
+  "Okay… just click 'No' now 😌"
+];
+let yesC = 0;
+btnYes.addEventListener('click', (e) => {
+  e.preventDefault(); yesC++;
+  mainQ.textContent = YES_MSG[Math.min(yesC, YES_MSG.length - 1)];
+  const w = btnYes.offsetWidth, h = btnYes.offsetHeight;
+  const mx = window.innerWidth - w - 20, my = window.innerHeight - h - 20;
+  const nx = 20 + Math.random() * Math.max(0, mx - 20);
+  const ny = 20 + Math.random() * Math.max(0, my - 20);
+  if (btnYes.style.position !== 'fixed') {
+    btnYes.style.position = 'fixed';
+    btnYes.style.width = w + 'px';
+  }
+  btnYes.style.left = nx + 'px';
+  btnYes.style.top  = ny + 'px';
+  btnYes.style.zIndex = '9999';
+  btnYes.style.transform = 'rotate(' + (Math.random() * 60 - 30) + 'deg) scale(' + (0.9 + Math.random() * 0.3) + ')';
+});
+btnNo.addEventListener('click', () => goToScreen('letter'));
+
+/* DISTANCE + HORLOGES */
+function haversine(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const toRad = d => d * Math.PI / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
+  return Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+}
+function animateDistance(target) {
+  const el = document.getElementById('distance-km');
+  if (!el) return;
+  const duration = 2000;
+  const start = performance.now();
+  function tick(now) {
+    const t = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - t, 3);
+    el.textContent = Math.round(target * eased).toLocaleString('en-US');
+    if (t < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+function startClocks() {
+  if (clocksStarted) return;
+  clocksStarted = true;
+  animateDistance(haversine(43.5297, 5.4474, 54.8656, 24.4578));
+  function updateClocks() {
+    const now = new Date();
+    let fr, lt;
+    try { fr = now.toLocaleTimeString('fr-FR', { timeZone: 'Europe/Paris', hour12: false }); }
+    catch (e) { fr = now.toTimeString().slice(0, 8); }
+    try { lt = now.toLocaleTimeString('en-GB', { timeZone: 'Europe/Vilnius', hour12: false }); }
+    catch (e) { lt = '--:--:--'; }
+    document.getElementById('clock-fr').textContent = fr;
+    document.getElementById('clock-lt').textContent = lt;
+  }
+  updateClocks();
+  setInterval(updateClocks, 1000);
+}
+
+/* POST-ITS + EXPLOSION DE CŒURS */
+const REASONS = [
+  "Your smile 😊",
+  "Your laugh 😄",
+  "How you say my name 💕",
+  "Your hugs 🤗",
+  "Your eyes ✨",
+  "You make me better 💪",
+  "Your kindness 🌸",
+  "Your voice 🎵",
+  "How strong you are 💫",
+  "Your soft heart ❤️",
+  "Everything about you 💖"
+];
+const BURST_EMOJIS = ['💖','💕','💗','💓','💞','💘','❤️','💝','🌹','✨','🩷'];
+
+function burstHeartsFrom(cx, cy) {
+  const total = 14 + Math.floor(Math.random() * 8);
+  for (let i = 0; i < total; i++) {
+    const heart = document.createElement('div');
+    heart.className = 'bubble-heart';
+    heart.textContent = BURST_EMOJIS[Math.floor(Math.random() * BURST_EMOJIS.length)];
+    const angle = Math.random() * Math.PI * 2;
+    const distance = 80 + Math.random() * 220;
+    const dy = -30 - Math.random() * 60;
+    heart.style.left = cx + 'px';
+    heart.style.top  = cy + 'px';
+    heart.style.setProperty('--tx', Math.cos(angle) * distance + 'px');
+    heart.style.setProperty('--ty', (Math.sin(angle) * distance + dy) + 'px');
+    heart.style.setProperty('--rot', (Math.random() * 720 - 360) + 'deg');
+    heart.style.fontSize = (1.1 + Math.random() * 1.3) + 'rem';
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 1400);
+  }
+}
+function startBubbles() {
+  if (bubblesDone) return;
+  bubblesDone = true;
+  const area = document.getElementById('bubbles-area');
+  if (!area) return;
+  area.innerHTML = '';
+  REASONS.forEach(r => {
+    const b = document.createElement('div');
+    b.className = 'bubble';
+    b.textContent = r;
+    b.addEventListener('click', () => {
+      const rect = b.getBoundingClientRect();
+      burstHeartsFrom(rect.left + rect.width/2, rect.top + rect.height/2);
+      b.classList.add('popped');
+      setTimeout(() => b.remove(), 500);
+    });
+    area.appendChild(b);
+  });
+}
+
+/* FEUX D'ARTIFICE */
+const fw = document.getElementById('fireworks-canvas');
+const fwctx = fw.getContext('2d');
+let rockets = [], sparks = [];
+function resizeFw() { fw.width = window.innerWidth; fw.height = window.innerHeight; }
+window.addEventListener('resize', resizeFw);
+
+const FW_COLORS = ['#ff6ec7','#ff4757','#ffb86c','#ffec5c','#a18cd1','#2ed573','#70a1ff','#ff1493'];
+
+class Rocket {
+  constructor() {
+    this.x = fw.width * (0.15 + Math.random() * 0.7);
+    this.y = fw.height;
+    this.targetY = fw.height * (0.15 + Math.random() * 0.35);
+    this.vy = -7 - Math.random() * 3;
+    this.color = FW_COLORS[Math.floor(Math.random() * FW_COLORS.length)];
+    this.exploded = false;
+    this.heartMode = Math.random() < 0.6;
+  }
+  update() {
+    this.y += this.vy; this.vy += 0.08;
+    if (this.y <= this.targetY || this.vy >= 0) { this.explode(); this.exploded = true; }
+  }
+  explode() {
+    const n = this.heartMode ? 80 : 60;
+    if (this.heartMode) {
+      for (let i = 0; i < n; i++) {
+        const t = (i / n) * Math.PI * 2;
+        const hx = 16 * Math.pow(Math.sin(t), 3);
+        const hy = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+        const scale = 0.55 + Math.random() * 0.15;
+        sparks.push(new Spark(this.x, this.y, hx * scale, hy * scale, this.color));
+      }
+    } else {
+      for (let i = 0; i < n; i++) {
+        const a = (i / n) * Math.PI * 2;
+        const s = 3 + Math.random() * 3;
+        sparks.push(new Spark(this.x, this.y, Math.cos(a)*s, Math.sin(a)*s, this.color));
+      }
+    }
+  }
+  draw() {
+    if (this.exploded) return;
+    fwctx.beginPath();
+    fwctx.moveTo(this.x, this.y);
+    fwctx.lineTo(this.x, this.y + 22);
+    fwctx.strokeStyle = this.color;
+    fwctx.lineWidth = 2;
+    fwctx.globalAlpha = 0.5;
+    fwctx.stroke();
+    fwctx.globalAlpha = 1;
+    fwctx.beginPath();
+    fwctx.arc(this.x, this.y, 2.5, 0, Math.PI * 2);
+    fwctx.fillStyle = '#fff';
+    fwctx.fill();
+  }
+}
+class Spark {
+  constructor(x, y, vx, vy, color) {
+    this.x = x; this.y = y; this.vx = vx; this.vy = vy;
+    this.color = color; this.life = 1;
+    this.decay = 0.012 + Math.random() * 0.008;
+    this.size = 1.5 + Math.random() * 1.8;
+  }
+  update() {
+    this.x += this.vx; this.y += this.vy;
+    this.vx *= 0.97; this.vy *= 0.97; this.vy += 0.05;
+    this.life -= this.decay;
+  }
+  draw() {
+    fwctx.globalAlpha = Math.max(0, this.life * 0.7);
+    fwctx.fillStyle = this.color;
+    fwctx.beginPath();
+    fwctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    fwctx.fill();
+    fwctx.globalAlpha = 1;
+  }
+}
+function launchRocket() { rockets.push(new Rocket()); }
+function animateFw() {
+  fwctx.clearRect(0, 0, fw.width, fw.height);
+  rockets = rockets.filter(r => !r.exploded);
+  rockets.forEach(r => { r.update(); r.draw(); });
+  sparks = sparks.filter(s => s.life > 0);
+  sparks.forEach(s => { s.update(); s.draw(); });
+  requestAnimationFrame(animateFw);
+}
+function startFireworks() {
+  if (fireworksStarted) return;
+  fireworksStarted = true;
+  resizeFw();
+  setTimeout(launchRocket, 300);
+  setTimeout(launchRocket, 900);
+  setInterval(() => {
+    launchRocket();
+    if (Math.random() < 0.35) setTimeout(launchRocket, 250);
+  }, 1800);
+  animateFw();
+}
+
+/* EXPLOSION DE CŒURS AU CLIC */
+const HEART_EMOJIS = ['💖','💕','💗','💓','💞','💘','❤️','💝','🌹'];
+function explodeHearts(cx, cy) {
+  for (let i = 0; i < 40; i++) {
+    const h = document.createElement('div');
+    h.className = 'exploding-heart';
+    h.textContent = HEART_EMOJIS[Math.floor(Math.random() * HEART_EMOJIS.length)];
+    const a = (Math.PI * 2 * i) / 40 + Math.random() * 0.3;
+    const d = 200 + Math.random() * 300;
+    h.style.left = cx + 'px';
+    h.style.top  = cy + 'px';
+    h.style.setProperty('--tx', Math.cos(a) * d + 'px');
+    h.style.setProperty('--ty', Math.sin(a) * d + 'px');
+    h.style.fontSize = (Math.random() * 1.5 + 1.5) + 'rem';
+    document.body.appendChild(h);
+    setTimeout(() => h.remove(), 2000);
+  }
+}
+document.getElementById('btn-hearts').addEventListener('click', (e) => {
+  const r = e.currentTarget.getBoundingClientRect();
+  explodeHearts(r.left + r.width/2, r.top + r.height/2);
+});
+document.getElementById('btn-final-hearts').addEventListener('click', (e) => {
+  const r = e.currentTarget.getBoundingClientRect();
+  explodeHearts(r.left + r.width/2, r.top + r.height/2);
+});
+
+/* PARALLAX POLAROIDS */
+document.querySelectorAll('.polaroid').forEach(card => {
+  card.addEventListener('mousemove', (e) => {
+    const rect = card.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    card.style.transform = 'rotate(0deg) scale(1.1) perspective(500px) rotateY(' + (x*12) + 'deg) rotateX(' + (-y*12) + 'deg)';
+  });
+  card.addEventListener('mouseleave', () => { card.style.transform = ''; });
+});
+</script>
+
+</body>
+</html>
